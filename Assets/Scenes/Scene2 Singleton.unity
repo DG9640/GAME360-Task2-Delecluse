@@ -692,7 +692,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 6339858543439966721, guid: 3456f03b27c08bf408eecca441db900d, type: 3}
   firePoint: {fileID: 210133546}
   fireRate: 0.5
-  ShootSound: {fileID: 0}
+  ShootSound: {fileID: 8300000, guid: aa659eeaf7a850a41a19d990aa3355dc, type: 3}
   CoinSound: {fileID: 8300000, guid: 3d16df54a64d949448af175ba9d65dea, type: 3}
 --- !u!61 &569245500
 BoxCollider2D:
