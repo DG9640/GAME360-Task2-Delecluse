@@ -47,15 +47,15 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // RefreshUIReferences();
-        // UpdateUI();
+        RefreshUIReferences();
+        UpdateUI();
 
     }
 
     private void Start()
     {
-        RefreshUIReferences();
-        UpdateUI();
+       // RefreshUIReferences();
+       // UpdateUI();
 
     }
 
@@ -122,7 +122,6 @@ public class GameManager : MonoBehaviour
 
     public void reloadGame()
     {
-        //SceneManager.LoadScene("Delete");
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -136,7 +135,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        // Reset all game state
+        // Reset game state
         score = 0;
         lives = 3;
         enemiesKilled = 0;
