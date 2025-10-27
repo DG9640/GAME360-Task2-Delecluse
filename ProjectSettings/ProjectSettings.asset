@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: b170f3c6b417b0d4793de8b456c55db1
+  productGUID: bc80940ba2a482f4ea82e89259033f1d
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Task2-3
+  productName: StateMachine_Delecluse
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -635,14 +635,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Task2-3
+  metroPackageName: StateMachine_Delecluse
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Task2-3
+  metroApplicationDescription: StateMachine_Delecluse
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -713,10 +713,10 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: b561d6f8-d429-4526-8f5d-70a4c25c779d
+  cloudProjectId: b8c75bb3-0a23-4c2e-8954-2de0da54ef18
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Task2-3
+  projectName: StateMachine_Delecluse
   organizationId: daxtondelecluse
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

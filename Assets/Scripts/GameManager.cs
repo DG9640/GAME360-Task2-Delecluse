@@ -1,170 +1,150 @@
-
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro; //Namesapce for textmeshpro
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    // Singleton instance
     public static GameManager Instance { get; private set; }
 
-    [Header("Game Stats")]
-    public int score = 0;//score is calculated
-    public int lives = 3;
-    public int enemiesKilled = 0;
+    [Header("Game Settings")]
+    public Vector3 spawnPoint = new Vector3(-8f, 0f, 0f);
+    public float levelTimeLimit = 120f;
 
-    [Header("UI References")]
-    public Text scoreText;
-    public Text livesText;
-    public Text enemiesKilledText;
-    public GameObject gameOverPanel;
-    //public TMP_Text scoreText;
+    private int score = 0;
+    private float timeRemaining;
+    private bool isGameActive = true;
+    private bool isPaused = false;
 
-    private void Awake()
+    void Awake()
     {
-        // Singleton pattern implementation
+        // Simple singleton - one per scene
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Persist across scenes
         }
         else
         {
-            Destroy(gameObject); // Destroy duplicate GameManagers
+            Destroy(gameObject);
+            return;
         }
     }
 
-    private void OnEnable()
+    void Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        InitializeGame();
     }
 
-    private void OnDisable()
+    void Update()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        RefreshUIReferences();
-        UpdateUI();
-
-    }
-
-    private void Start()
-    {
-       // RefreshUIReferences();
-       // UpdateUI();
-
-    }
-
-    private void RefreshUIReferences()
-    {
-        
-       scoreText = GameObject.Find("Score")?.GetComponent<Text>();
-       livesText = GameObject.Find("Lives")?.GetComponent<Text>();
-       enemiesKilledText = GameObject.Find("EnemiesKilled")?.GetComponent<Text>();
-       gameOverPanel = GameObject.Find("GameEndPanel");
-        if (gameOverPanel != null)
+        // Debug current state
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            gameOverPanel.SetActive(false);
+            Debug.Log("=== DEBUG ===");
+            Debug.Log("Time: " + timeRemaining);
+            Debug.Log("Active: " + isGameActive);
+            Debug.Log("Paused: " + isPaused);
+            Debug.Log("TimeScale: " + Time.timeScale);
         }
 
+        // Only update timer when game is active AND not paused
+        if (isGameActive && !isPaused)
+        {
+            timeRemaining -= Time.deltaTime;
+
+            if (timeRemaining <= 0)
+            {
+                timeRemaining = 0;
+                GameOver();
+            }
+        }
+
+        // Restart input
+        if (!isGameActive && Input.GetKeyDown(KeyCode.R))
+        {
+            RestartGame();
+        }
     }
+
+    void InitializeGame()
+    {
+        Debug.Log("=== INITIALIZING GAME ===");
+
+        // Reset all values
+        score = 0;
+        timeRemaining = levelTimeLimit;
+        isGameActive = true;
+        isPaused = false;
+
+        // CRITICAL: Force unpause
+        Time.timeScale = 1f;
+
+        Debug.Log("Score: " + score);
+        Debug.Log("Timer: " + timeRemaining);
+        Debug.Log("Active: " + isGameActive);
+        Debug.Log("Paused: " + isPaused);
+        Debug.Log("TimeScale: " + Time.timeScale);
+
+        EventManager.TriggerEvent("OnGameStart");
+    }
+
     public void AddScore(int points)
     {
         score += points;
-        Debug.Log($"Score increased by {points}. Total: {score}");
-        UpdateUI();
+        EventManager.TriggerEvent("OnScoreChanged", score);
     }
 
-
-    public void LoseLife()
+    public void PlayerDied()
     {
-        lives--;
-        Debug.Log($"Life lost! Lives remaining: {lives}");
-        UpdateUI();
-
-        if (lives <= 0)
-        {
-            GameOver();
-        }
+        EventManager.TriggerEvent("OnPlayerDied");
     }
 
-    public void EnemyKilled()
+    public void LevelComplete()
     {
-        enemiesKilled++;
-        AddScore(100); // 100 points per enemy
-        Debug.Log($"Enemy killed! Total enemies defeated: {enemiesKilled}");
+        isGameActive = false;
+        PauseGame();
+        EventManager.TriggerEvent("OnLevelComplete", score);
     }
 
-
-    public void CollectiblePickedUp(int value)
+    void GameOver()
     {
-        AddScore(value);
-        Debug.Log($"Collectible picked up worth {value} points!");
+        Debug.Log("💀 GAME OVER");
+        isGameActive = false;
+        PauseGame();
+        EventManager.TriggerEvent("OnGameOver", score);
     }
 
-    private void UpdateUI()
+    public void PauseGame()
     {
-        if (scoreText) scoreText.text = "Score: " + score;
-        if (livesText) livesText.text = "Lives: " + lives;
-        if (enemiesKilledText) enemiesKilledText.text = "Enemies: " + enemiesKilled;
+        isPaused = true;
+        Time.timeScale = 0f;
+        Debug.Log("⏸️ Paused (TimeScale: " + Time.timeScale + ")");
     }
 
-    private void GameOver()
+    public void ResumeGame()
     {
-        Debug.Log("GAME OVER!");
-        if (gameOverPanel) gameOverPanel.SetActive(true);
-        Time.timeScale = 0f; // Pause the game
+        isPaused = false;
+        Time.timeScale = 1f;
+        Debug.Log("▶️ Resumed (TimeScale: " + Time.timeScale + ")");
     }
-
-    public void reloadGame()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void quitGame()
-    {
-        Application.Quit();
-    }
-
 
     public void RestartGame()
     {
+        Debug.Log("=== RESTARTING ===");
+
+        // Clear events
+        EventManager.ClearAllEvents();
+
+        // CRITICAL: Reset time scale
         Time.timeScale = 1f;
+        isPaused = false;
 
-        // Reset game state
-        score = 0;
-        lives = 3;
-        enemiesKilled = 0;
+        Debug.Log("TimeScale reset to: " + Time.timeScale);
 
+        // Reload scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-       
     }
 
-    private void DestroyAllGameObjects()
-    {
-        // Destroy all enemies
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (GameObject enemy in enemies)
-        {
-            Destroy(enemy);
-        }
-
-        // Destroy all bullets
-        GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
-        foreach (GameObject bullet in bullets)
-        {
-            Destroy(bullet);
-        }
-
-        // Destroy all collectibles
-        GameObject[] collectibles = GameObject.FindGameObjectsWithTag("Collectible");
-        foreach (GameObject collectible in collectibles)
-        {
-            Destroy(collectible);
-        }
-    }
+    public int GetScore() => score;
+    public float GetTimeRemaining() => timeRemaining;
+    public bool IsGameActive() => isGameActive;
+    public bool IsPaused() => isPaused;
 }

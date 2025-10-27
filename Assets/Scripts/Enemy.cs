@@ -2,90 +2,49 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Enemy Stats")]
-    public int health = 1;
+    public int scoreValue = 10;
     public float moveSpeed = 2f;
+    private Vector3 startPos;
+    private int direction = -1;
 
-    [Header("AI")]
-    public float detectionRange = 5f;
-
-    private Transform player;
-    private Rigidbody2D rb;
-
-    private void Start()
+    void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-        // Find player
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj) player = playerObj.transform;
+        startPos = transform.position;
     }
 
-    private void Update()
+    void Update()
     {
-        ChasePlayer();
-    }
-
-    private void ChasePlayer()
-    {
-        if (player)
+        // NEW: Don't move when paused
+        if (GameManager.Instance != null && GameManager.Instance.IsPaused())
         {
-            if (GameManager.Instance.score > 1000)
-                moveSpeed = 3f;
-            if (GameManager.Instance.score > 2000)
-                moveSpeed = 4f;
-            float distance = Vector2.Distance(transform.position, player.position);
+            return;
+        }
 
-            if (distance <= detectionRange)
-            {
-                Vector2 direction = (player.position - transform.position).normalized;
-               // rb.linearVelocity = direction * moveSpeed;
-               rb.AddForce(direction * moveSpeed);
-            }
-            else
-            {
-                rb.linearVelocity = Vector2.zero;
-            }
+        // Move enemy
+        transform.position += Vector3.right * direction * moveSpeed * Time.deltaTime;
+
+        if (Mathf.Abs(transform.position.x - startPos.x) > 3f)
+        {
+            direction *= -1;
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage()
     {
-        health -= damage;
-
-        if (health <= 0)
-        {
-            Die();
-        }
+        GameManager.Instance.AddScore(scoreValue);
+        EventManager.TriggerEvent("OnEnemyDefeated");
+        Destroy(gameObject);
     }
 
-    private void Die()
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        // This is where Singleton shines!
-        // Any enemy can easily notify the GameManager
-        GameManager.Instance.EnemyKilled(); //update the score of the player
-        Destroy(gameObject); // the enemy gets destroyed
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // Custom 2D circle for older Unity versions
-        Gizmos.color = Color.red;
-
-        int segments = 32;
-        float angle = 0f;
-        Vector3 lastPos = transform.position + new Vector3(detectionRange, 0, 0);
-
-        for (int i = 1; i <= segments; i++)
+        if (collision.CompareTag("Player"))
         {
-            angle = (i * 360f / segments) * Mathf.Deg2Rad;
-            Vector3 newPos = transform.position + new Vector3(
-                Mathf.Cos(angle) * detectionRange,
-                Mathf.Sin(angle) * detectionRange,
-                0
-            );
-            Gizmos.DrawLine(lastPos, newPos);
-            lastPos = newPos;
+            PlayerController player = collision.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.TakeDamage();
+            }
         }
     }
 }

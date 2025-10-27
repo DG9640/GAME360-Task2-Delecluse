@@ -2,37 +2,32 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [Header("Bullet Settings")]
-    public float speed = 10f;
+    public float speed = 15f;
     public float lifetime = 3f;
 
-    private Rigidbody2D rb;
-
-    private void Start()
+    void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        rb.linearVelocity = transform.up * speed;
-
-        // Destroy bullet after lifetime
         Destroy(gameObject, lifetime);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void Update()
     {
-        if (other.CompareTag("Enemy"))
+        transform.Translate(Vector2.right * speed * Time.deltaTime);
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemy"))
         {
-            // Bullet hit enemy
-            Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy)
+            Enemy enemy = collision.GetComponent<Enemy>();
+            if (enemy != null)
             {
-                enemy.TakeDamage(1);
-                GameManager.Instance.AddScore(100);
-                Destroy(gameObject); // Destroy bullet
+                enemy.TakeDamage();
             }
+            Destroy(gameObject);
         }
 
-        // Destroy bullet if it hits walls or boundaries
-        if (other.CompareTag("Wall"))
+        if (collision.CompareTag("Ground"))
         {
             Destroy(gameObject);
         }
