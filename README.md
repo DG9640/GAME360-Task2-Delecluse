@@ -1,23 +1,32 @@
-# GAME360-Task2-Delecluse
-# Task 2: Singleton Implementation
-## Student Info
-- Name: Daxton Delecluse
-- ID: 01255083
-## Pattern: Singleton
-### Implementation
-The singleton pattern was implemented via the GameManager script in Unity. The Game Manager handles methods across the whole game, from the quit button to the scoring system. Every object in the game communicates with the game manager to allow for a smooth experience. Considering the infinite amount of enemies that can spawn, the singleton pattern was necessary so that there weren't dozens of scripts running at the same time. Instead, they are all communicating with one object in the game. The game manager is also in charge of reloading the game, and is useful for making sure the game reloads all assets properly.
+# Task 3: Complete Patterns Integration
 
-### Game Integration
-The game manager is implemented in the game because it is, like said before, in charge of nearly everything. It controls how the game loads, keeps score of everything, manages how the player loses lives, checks when collectibles are picked up, and then accurately updates the UI to track all of that. Every single method the game could ever need is located in the game manager (except for a select few). Because of this, the game manager is the only object in the game that needs to be kept between loads, as it can reload everything else on its own.
+# Project Evolution
+# Task 3 Foundation
+- Singleton Pattern: GameManager, AudioManager
+- Basic game with centralized management
 
-## Game Description
-- Title: Space Marauders
-- Controls: WASD for Movement, Click to Shoot
-- Objective: Survive as long as possible against the enemy ships. Shoot them to score points.
+## Observer Pattern
+- EventManager for decoupled communication
+- Events implemented: AddScore, PlayerDied, LevelComplete, GameOver, PauseGame, ResumeGame, RestartGame
+- Observers: UIManager
 
-## Repository Stats
-- Total Commits: 5 (including the one with this README)
-- Development Time: 6 hours
+## State Machine Pattern
+- Player States: Idle, Jumping, Moving
+- Game States: Playing, Game Over, Victory
+- State transitions: When time runs out, game transitions to game over state. When the player reaches the goal, the game transitions to victory state. When restarting from either of these two states, the game moves to the playing state.
 
-## Side Note
-This task was confusing to me. It reads like we were supposed to make our own separate project, but the assets on Canvas and tutorial videos seem to want us to follow them completely? Also, the task description says to start with git implementation from day 1, but the tutorial video for git implementation was released on the last week of the task. Why not include the tutorial in week 4?
+### Key Integration Points
+1. Score System: Singleton → Observer → UI
+2. Player Actions: Input → State → Event → Audio
+3. Game Flow: GameState → Events → Scene Changes
+
+## Repository Statistics
+- Total Commits: 14
+- Task 3 Commits: 8
+- Lines of Code: 600
+- Development Time: 20 hours
+
+## How to Play
+- Controls: WASD/Arrow Keys to Move | Space to Jump
+- Objective: Reach the flag
+- New Features: Pretty much everything
