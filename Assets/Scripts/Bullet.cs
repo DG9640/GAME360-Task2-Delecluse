@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        gameObject.transform.Translate(Vector2.right * speed * Time.deltaTime);
+        transform.Translate(Vector2.right * speed * Time.deltaTime);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -22,6 +22,7 @@ public class Bullet : MonoBehaviour
             Enemy enemy = collision.GetComponent<Enemy>();
             if (enemy != null)
             {
+                Debug.Log("Enemy detected!");
                 enemy.TakeDamage();
             }
             Destroy(gameObject);
